@@ -9,5 +9,11 @@ dist-ssr
 .wrangler
 .output
 .vinxi
+.vite
+coverage
+*.log
+.env.*
+!.env.example
+!.env.production.example
 __unconfig*
 todos.json
