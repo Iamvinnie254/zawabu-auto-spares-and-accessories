@@ -4,6 +4,7 @@ import {
   boolean,
   index,
   integer,
+  pgSequence,
   pgTable,
   text,
   timestamp,
@@ -73,11 +74,18 @@ export const products = pgTable(
   ],
 )
 
+export const orderNumberSequence = pgSequence('order_number_seq', {
+  startWith: 1043,
+})
+
 export const orders = pgTable(
   'orders',
   {
     id: uuid('id').primaryKey().defaultRandom(),
-    orderNumber: text('order_number').notNull().unique(),
+    orderNumber: text('order_number')
+      .notNull()
+      .unique()
+      .default(sql`'ZW-' || nextval('order_number_seq')::text`),
     customer: text('customer').notNull(),
     phone: text('phone').notNull(),
     email: text('email'),
@@ -87,6 +95,7 @@ export const orders = pgTable(
     paymentStatus: text('payment_status', { enum: PAYMENT_STATUSES })
       .notNull()
       .default('Unpaid'),
+    paymentReference: text('payment_reference').unique(),
     status: text('status', { enum: ORDER_STATUSES }).notNull().default('Pending'),
     subtotal: integer('subtotal').notNull(),
     deliveryFee: integer('delivery_fee').notNull(),

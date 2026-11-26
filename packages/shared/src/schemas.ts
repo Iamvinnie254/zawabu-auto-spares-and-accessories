@@ -98,7 +98,7 @@ export const createOrderSchema = z.object({
   items: z
     .array(
       z.object({
-        productId: z.string().min(1),
+        productId: z.uuid(),
         qty: z.int().positive().max(1000),
       }),
     )
@@ -115,6 +115,10 @@ export const updateOrderSchema = z
     notes: z.string().max(1000).optional(),
   })
   .refine((value) => Object.keys(value).length > 0, 'No fields to update')
+
+export const orderQuerySchema = z.object({
+  status: z.enum(ORDER_STATUSES).optional(),
+})
 
 export const trackOrderSchema = z.object({
   orderNumber: z.string().min(3).max(40),
@@ -141,6 +145,7 @@ export type CreateProductInput = z.infer<typeof createProductSchema>
 export type UpdateProductInput = z.infer<typeof updateProductSchema>
 export type CreateOrderInput = z.infer<typeof createOrderSchema>
 export type UpdateOrderInput = z.infer<typeof updateOrderSchema>
+export type OrderQuery = z.infer<typeof orderQuerySchema>
 export type TrackOrderInput = z.infer<typeof trackOrderSchema>
 export type EnquiryInput = z.infer<typeof enquirySchema>
 export type StkPaymentInput = z.infer<typeof stkPaymentSchema>
