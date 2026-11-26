@@ -125,6 +125,14 @@ export const trackOrderSchema = z.object({
   phone: kenyanPhone,
 })
 
+export const enquiryQuerySchema = z.object({
+  status: z.enum(['New', 'Replied']).optional(),
+})
+
+export const updateEnquirySchema = z.object({
+  status: z.enum(['New', 'Replied']),
+})
+
 export const enquirySchema = z.object({
   name: z.string().min(2).max(120),
   phone: kenyanPhone,
@@ -148,5 +156,7 @@ export type UpdateOrderInput = z.infer<typeof updateOrderSchema>
 export type OrderQuery = z.infer<typeof orderQuerySchema>
 export type TrackOrderInput = z.infer<typeof trackOrderSchema>
 export type EnquiryInput = z.infer<typeof enquirySchema>
+export type EnquiryQuery = z.infer<typeof enquiryQuerySchema>
+export type UpdateEnquiryInput = z.infer<typeof updateEnquirySchema>
 export type StkPaymentInput = z.infer<typeof stkPaymentSchema>
 export type PaymentCallbackInput = z.infer<typeof paymentCallbackSchema>
