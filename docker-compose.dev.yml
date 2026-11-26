@@ -1,0 +1,37 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: zawabu-postgres-dev
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: zawabu
+      POSTGRES_PASSWORD: zawabu
+      POSTGRES_DB: zawabu_dev
+    ports:
+      - "5432:5432"
+    volumes:
+      - zawabu-pgdata-dev:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U zawabu -d zawabu_dev"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  redis:
+    image: redis:7.4-alpine
+    container_name: zawabu-redis-dev
+    restart: unless-stopped
+    command: ["redis-server", "--appendonly", "yes"]
+    ports:
+      - "6380:6379"
+    volumes:
+      - zawabu-redisdata-dev:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+volumes:
+  zawabu-pgdata-dev:
+  zawabu-redisdata-dev:

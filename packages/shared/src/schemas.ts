@@ -36,7 +36,7 @@ export const createUserSchema = z.object({
 })
 
 export const updateUserSchema = createUserSchema
-  .omit({ password: true })
+  .extend({ isActive: z.boolean() })
   .partial()
   .refine((value) => Object.keys(value).length > 0, 'No fields to update')
 
