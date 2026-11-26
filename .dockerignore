@@ -1,0 +1,10 @@
+.git
+.env
+.env.*
+!.env.production.example
+**/node_modules
+**/.output
+**/dist
+**/coverage
+**/*.log
+bun.lockb

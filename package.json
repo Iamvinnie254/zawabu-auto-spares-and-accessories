@@ -16,7 +16,9 @@
     "db:seed": "bun run --cwd apps/api db:seed",
     "db:studio": "bun run --cwd apps/api db:studio",
     "infra:dev": "docker compose -f docker-compose.dev.yml up -d",
-    "infra:down": "docker compose -f docker-compose.dev.yml down"
+    "infra:down": "docker compose -f docker-compose.dev.yml down",
+    "docker:prod": "docker compose -f docker-compose.prod.yml up -d --build",
+    "docker:prod:down": "docker compose -f docker-compose.prod.yml down"
   },
   "devDependencies": {
     "@types/bun": "^1.4.5",

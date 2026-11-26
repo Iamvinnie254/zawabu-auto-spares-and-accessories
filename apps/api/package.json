@@ -5,6 +5,7 @@
   "scripts": {
     "dev": "bun run src/main.ts",
     "start": "bun run src/main.ts",
+    "container:start": "bun run src/db/migrate.ts && bun run src/main.ts",
     "build": "tsc --noEmit",
     "typecheck": "tsc --noEmit",
     "test": "bun test test",
