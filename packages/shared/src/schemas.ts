@@ -72,7 +72,20 @@ export const productQuerySchema = z.object({
   category: z.string().max(60).optional(),
   vehicle: z.enum(VEHICLE_TYPES).optional(),
   make: z.string().max(60).optional(),
-  lowStock: z.coerce.boolean().optional(),
+  lowStock: z
+    .enum(['true', 'false'])
+    .transform((value) => value === 'true')
+    .optional(),
+})
+
+export const stkPaymentSchema = z.object({
+  orderId: z.uuid(),
+  phone: kenyanPhone,
+})
+
+export const paymentCallbackSchema = z.object({
+  reference: z.string().min(3).max(100),
+  status: z.enum(['Paid', 'Failed']),
 })
 
 export const createOrderSchema = z.object({
@@ -130,3 +143,5 @@ export type CreateOrderInput = z.infer<typeof createOrderSchema>
 export type UpdateOrderInput = z.infer<typeof updateOrderSchema>
 export type TrackOrderInput = z.infer<typeof trackOrderSchema>
 export type EnquiryInput = z.infer<typeof enquirySchema>
+export type StkPaymentInput = z.infer<typeof stkPaymentSchema>
+export type PaymentCallbackInput = z.infer<typeof paymentCallbackSchema>
