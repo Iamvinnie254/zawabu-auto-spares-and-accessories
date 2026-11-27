@@ -15,6 +15,7 @@ export const envSchema = z
     SUPER_ADMIN_EMAIL: z.email().default("superadmin@zawabu.co.ke"),
     SUPER_ADMIN_PASSWORD: z.string().min(12).default("ChangeMe!SuperAdmin2026"),
     CORS_ORIGIN: z.string().min(1).default("http://localhost:3000"),
+    CORS_ORIGINS: z.string().optional(),
   })
   .superRefine((env, ctx) => {
     if (env.NODE_ENV === "production") {

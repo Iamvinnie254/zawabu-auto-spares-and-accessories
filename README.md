@@ -190,3 +190,30 @@ Loaders simplify your data fetching logic dramatically. Check out more informati
 You can learn more about all of the offerings from TanStack in the [TanStack documentation](https://tanstack.com).
 
 For TanStack Start specific documentation, visit [TanStack Start](https://tanstack.com/start).
+
+## Vercel deployment
+
+This repository is configured for [Vercel Services](https://vercel.com/docs/services) in `vercel.json`:
+
+- `/api/*` routes to the `api` NestJS service in `apps/api`
+- all other routes go to the `web` Nitro/TanStack Start service in `apps/web`
+
+Set these environment variables in the Vercel project before deploying:
+
+- `DATABASE_URL`: external Postgres connection string
+- `REDIS_URL`: external Redis/Valkey connection string
+- `JWT_SECRET`, `JWT_EXPIRES_IN`, `BCRYPT_ROUNDS`
+- `SUPER_ADMIN_EMAIL`, `SUPER_ADMIN_PASSWORD`
+- `CORS_ORIGIN` or `CORS_ORIGINS`: deployed web origin, such as `https://your-project.vercel.app`
+- `VITE_API_URL=/api`
+- `VITE_API_SERVER_URL=https://your-project.vercel.app/api`
+
+The `VITE_*` variables are build-time values, so set them before the deployment build. The API service uses the `PORT` value injected by Vercel.
+
+Run migrations against the production database before the first deployment:
+
+```bash
+DATABASE_URL=postgres://... bun run --cwd apps/api db:migrate
+```
+
+Do not run `db:seed` against production; it loads sample storefront data.

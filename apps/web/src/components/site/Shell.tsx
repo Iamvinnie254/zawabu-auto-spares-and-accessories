@@ -12,6 +12,12 @@ const nav = [
   { to: "/contact", label: "Contact & Enquiries" },
 ] as const;
 
+function BrandLogo({ className }: { className?: string }) {
+  return (
+    <img src="/logo.svg" alt="" aria-hidden="true" width={40} height={40} className={className} />
+  );
+}
+
 export function SiteShell({ children }: { children: ReactNode }) {
   const path = useRouterState({ select: (s) => s.location.pathname });
   if (path.startsWith("/admin")) return <>{children}</>;
@@ -46,9 +52,7 @@ function Header() {
       </div>
       <div className="mx-auto flex max-w-7xl items-center justify-between gap-3 px-4 py-3 sm:px-6 sm:py-4">
         <Link to="/" className="flex min-w-0 items-center gap-2">
-          <span className="grid h-9 w-9 shrink-0 place-items-center rounded bg-primary font-display text-lg font-bold text-primary-foreground sm:h-10 sm:w-10 sm:text-xl">
-            Z
-          </span>
+          <BrandLogo className="h-9 w-9 shrink-0 object-contain sm:h-10 sm:w-10" />
           <span className="min-w-0 leading-none">
             <span className="block truncate font-display text-lg font-bold uppercase tracking-wide sm:text-xl">
               Zawabu
@@ -119,7 +123,10 @@ function Footer() {
       <div className="stripe-bg h-1.5" />
       <div className="mx-auto grid max-w-7xl grid-cols-2 gap-8 px-4 py-10 sm:px-6 md:grid-cols-4 md:py-12">
         <div className="col-span-2">
-          <h3 className="text-xl text-ink-foreground">Zawabu Auto Spares</h3>
+          <div className="flex items-center gap-3">
+            <BrandLogo className="h-10 w-10 shrink-0 object-contain sm:h-12 sm:w-12" />
+            <h3 className="text-xl text-ink-foreground">Zawabu Auto Spares</h3>
+          </div>
           <p className="mt-2 max-w-sm text-sm">
             Genuine and quality spare parts for cars and motorbikes, plus accessories — right on
             Kirinyaga Road, Nairobi.
