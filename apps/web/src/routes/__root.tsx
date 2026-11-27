@@ -12,8 +12,9 @@ import { useEffect, type ReactNode } from "react";
 
 import appCss from "../styles.css?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
-import { StoreProvider } from "../lib/store";
 import { SiteShell } from "../components/site/Shell";
+import { useCart } from "../lib/cart";
+import { useSession } from "../lib/session";
 
 function NotFoundComponent() {
   return (
@@ -123,14 +124,19 @@ function RootShell({ children }: { children: ReactNode }) {
 function RootComponent() {
   const { queryClient } = Route.useRouteContext();
 
+  useEffect(() => {
+    void useSession.persist.rehydrate();
+    void useCart.persist.rehydrate();
+    ["zw_cart", "zw_products", "zw_orders", "zw_enq", "zw_admin"].forEach((key) =>
+      localStorage.removeItem(key),
+    );
+  }, []);
+
   return (
     <QueryClientProvider client={queryClient}>
-      {/* Required: nested routes render here. Removing <Outlet /> breaks all child routes. */}
-      <StoreProvider>
-        <SiteShell>
-          <Outlet />
-        </SiteShell>
-      </StoreProvider>
+      <SiteShell>
+        <Outlet />
+      </SiteShell>
     </QueryClientProvider>
   );
 }

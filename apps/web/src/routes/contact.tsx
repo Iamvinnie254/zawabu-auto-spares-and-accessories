@@ -2,12 +2,12 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
 import { z } from "zod";
 import { MapPin, Phone, Clock, CheckCircle2 } from "lucide-react";
-import { useStore } from "@/lib/store";
+import { ApiError, useCreateEnquiry } from "@/lib/api";
 import { PageTitle, PHONE } from "@/components/site/Shell";
 import { meta } from "@/lib/meta";
 
 const schema = z.object({
-  name: z.string().trim().min(2, "Enter your name").max(100), phone: z.string().trim().min(9, "Enter your phone").max(20),
+  name: z.string().trim().min(2, "Enter your name").max(100), phone: z.string().trim().regex(/^(\+?254|0)[17]\d{8}$/, "Enter a valid Kenyan phone number"),
   email: z.string().trim().email("Enter a valid email").max(255), subject: z.string().trim().min(2, "Add a subject").max(150),
   message: z.string().trim().min(5, "Tell us what you need").max(1000),
 });
@@ -15,14 +15,19 @@ export const Route = createFileRoute("/contact")({ validateSearch: z.object({ pa
 
 function Contact() {
   const { part } = Route.useSearch();
-  const { addEnquiry } = useStore();
+  const createEnquiry = useCreateEnquiry();
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [sent, setSent] = useState(false);
-  const submit = (e: React.FormEvent<HTMLFormElement>) => {
+  const submit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const r = schema.safeParse(Object.fromEntries(new FormData(e.currentTarget)));
     if (!r.success) { setErrors(Object.fromEntries(r.error.issues.map((i) => [String(i.path[0]), i.message]))); return; }
-    addEnquiry(r.data); setSent(true);
+    try {
+      await createEnquiry.mutateAsync(r.data);
+      setErrors({}); setSent(true);
+    } catch (error) {
+      setErrors({ form: error instanceof ApiError ? error.message : "Could not send enquiry. Please try again." });
+    }
   };
   const Err = ({ n }: { n: string }) => errors[n] ? <span className="text-sm text-destructive">{errors[n]}</span> : null;
   return (
@@ -38,7 +43,8 @@ function Contact() {
           <label className="block"><span className="text-sm font-medium">Email</span><input name="email" type="email" className="field" /><Err n="email" /></label>
           <label className="block"><span className="text-sm font-medium">Subject / part needed</span><input name="subject" defaultValue={part} className="field" /><Err n="subject" /></label>
           <label className="block"><span className="text-sm font-medium">Message (include make, model, year)</span><textarea name="message" rows={5} className="field" /><Err n="message" /></label>
-          <button className="btn btn-primary">Send enquiry</button>
+          <Err n="form" />
+          <button className="btn btn-primary" disabled={createEnquiry.isPending}>{createEnquiry.isPending ? "Sending…" : "Send enquiry"}</button>
         </form>}
         <aside className="space-y-4">
           <div className="space-y-3 rounded-lg bg-ink p-6 text-ink-foreground">

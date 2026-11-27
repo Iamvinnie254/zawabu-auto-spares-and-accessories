@@ -1,7 +1,7 @@
 import { Link, useRouterState } from "@tanstack/react-router";
 import { MapPin, Phone, ShoppingCart, Menu, X, Clock, Mail } from "lucide-react";
 import { useState, type ReactNode } from "react";
-import { useStore } from "@/lib/store";
+import { selectCartCount, useCart } from "@/lib/cart";
 import { ksh, type Product } from "@/lib/data";
 
 export const PHONE = "0700 000 000";
@@ -16,7 +16,7 @@ export function SiteShell({ children }: { children: ReactNode }) {
 }
 
 function Header() {
-  const { count } = useStore();
+  const count = useCart(selectCartCount);
   const [open, setOpen] = useState(false);
   return (
     <header className="sticky top-0 z-40 bg-ink text-ink-foreground">
@@ -63,7 +63,7 @@ function Footer() {
 }
 
 export function ProductCard({ p }: { p: Product }) {
-  const { add } = useStore();
+  const add = useCart((s) => s.add);
   return (
     <div className="group flex flex-col overflow-hidden rounded-lg border bg-card transition hover:border-primary hover:shadow-lg">
       <Link to="/product/$id" params={{ id: p.id }} className="relative aspect-square overflow-hidden bg-muted">
@@ -75,7 +75,7 @@ export function ProductCard({ p }: { p: Product }) {
         <span className="text-xs uppercase text-muted-foreground">{p.brand}</span>
         <Link to="/product/$id" params={{ id: p.id }} className="font-semibold leading-tight hover:text-primary">{p.name}</Link>
         <div className="mt-2 flex items-baseline gap-2"><span className="font-display text-lg font-bold text-primary">{ksh(p.price)}</span>{p.oldPrice && <span className="text-sm text-muted-foreground line-through">{ksh(p.oldPrice)}</span>}</div>
-        <button onClick={() => add(p.id)} disabled={p.stock === 0} className="btn btn-primary mt-auto w-full pt-2 text-sm disabled:opacity-50">{p.stock === 0 ? "Out of stock" : "Add to cart"}</button>
+        <button onClick={() => add(p)} disabled={p.stock === 0} className="btn btn-primary mt-auto w-full pt-2 text-sm disabled:opacity-50">{p.stock === 0 ? "Out of stock" : "Add to cart"}</button>
       </div>
     </div>
   );

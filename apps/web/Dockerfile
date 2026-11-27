@@ -1,6 +1,10 @@
 FROM oven/bun:1.3-alpine AS build
 WORKDIR /app
 
+ARG VITE_API_URL=/api
+ARG VITE_API_SERVER_URL=http://localhost:4000/api
+ENV VITE_API_URL=$VITE_API_URL VITE_API_SERVER_URL=$VITE_API_SERVER_URL
+
 COPY package.json bun.lock ./
 COPY apps/api/package.json apps/api/package.json
 COPY apps/web/package.json apps/web/package.json

@@ -2,7 +2,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import * as Icons from "lucide-react";
 import { ShieldCheck, Truck, Wrench, Smartphone, ArrowRight } from "lucide-react";
 import { CATEGORIES } from "@/lib/data";
-import { useStore } from "@/lib/store";
+import { useProducts } from "@/lib/api";
 import { ProductCard } from "@/components/site/Shell";
 import { meta } from "@/lib/meta";
 
@@ -16,7 +16,7 @@ export const Route = createFileRoute("/")({
 });
 
 function Home() {
-  const { products } = useStore();
+  const { data: products = [] } = useProducts();
   const offers = products.filter((p) => p.oldPrice).slice(0, 4);
   return (
     <>

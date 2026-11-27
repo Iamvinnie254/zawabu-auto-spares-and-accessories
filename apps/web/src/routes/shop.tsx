@@ -1,7 +1,7 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { z } from "zod";
 import { CATEGORIES } from "@/lib/data";
-import { useStore } from "@/lib/store";
+import { useProducts, type ProductFilters } from "@/lib/api";
 import { PageTitle, ProductCard } from "@/components/site/Shell";
 import { meta } from "@/lib/meta";
 
@@ -15,7 +15,11 @@ export const Route = createFileRoute("/shop")({
 function Shop() {
   const { cat, q, v, sort } = Route.useSearch();
   const nav = useNavigate({ from: "/shop" });
-  const { products } = useStore();
+  const { data: products = [], isLoading } = useProducts({
+    search: q,
+    category: cat,
+    vehicle: v as ProductFilters["vehicle"],
+  });
   const set = (k: string, val?: string) => nav({ search: (s) => ({ ...s, [k]: val || undefined }) });
   let list = products.filter((p) => (!cat || p.category === cat) && (!v || p.vehicle === v) && (!q || (p.name + p.brand).toLowerCase().includes(q.toLowerCase())));
   if (sort === "low") list = [...list].sort((a, b) => a.price - b.price);
@@ -35,7 +39,7 @@ function Shop() {
             <select className="field" value={v ?? ""} onChange={(e) => set("v", e.target.value)}><option value="">All</option><option>Car</option><option>Motorbike</option><option>Universal</option></select></div>
         </aside>
         <div>
-          <div className="mb-4 flex items-center justify-between"><span className="text-muted-foreground">{list.length} products</span>
+          <div className="mb-4 flex items-center justify-between"><span className="text-muted-foreground">{isLoading ? "Loading…" : `${list.length} products`}</span>
             <select className="field w-auto" value={sort ?? ""} onChange={(e) => set("sort", e.target.value)}><option value="">Sort: Featured</option><option value="low">Price: low to high</option><option value="high">Price: high to low</option></select></div>
           {list.length ? <div className="grid grid-cols-2 gap-4 lg:grid-cols-3">{list.map((p) => <ProductCard key={p.id} p={p} />)}</div> : <p className="rounded-lg border bg-card p-10 text-center text-muted-foreground">No parts match. Try another search, or send us an enquiry.</p>}
         </div>
