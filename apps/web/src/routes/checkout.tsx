@@ -1,6 +1,7 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useState } from "react";
 import { z } from "zod";
+import { LoaderCircle } from "lucide-react";
 import { DELIVERY_FEE_KES } from "@zawabu/shared";
 import { ksh } from "@/lib/data";
 import { selectCartSubtotal, useCart } from "@/lib/cart";
@@ -38,10 +39,10 @@ function Opt<T extends string>({
     <button
       type="button"
       onClick={() => set(v)}
-      className={`rounded-lg border p-4 text-left ${cur === v ? "border-primary bg-primary/5" : "bg-card"}`}
+      className={`w-full rounded-lg border p-4 text-left transition hover-lift ${cur === v ? "border-primary bg-primary/5" : "bg-card"}`}
     >
-      <span className="font-display uppercase">{v}</span>
-      <span className="block text-sm text-muted-foreground">{desc}</span>
+      <span className="font-display text-sm uppercase sm:text-base">{v}</span>
+      <span className="mt-1 block text-xs text-muted-foreground sm:text-sm">{desc}</span>
     </button>
   );
 }
@@ -58,7 +59,7 @@ function Checkout() {
   const fee = delivery === "Delivery" ? DELIVERY_FEE : 0;
   if (!lines.length)
     return (
-      <div className="mx-auto max-w-xl p-16 text-center">
+      <div className="mx-auto max-w-xl animate-fade-in p-8 text-center sm:p-16">
         <p>Your cart is empty.</p>
         <Link to="/shop" className="btn btn-primary mt-4">
           Shop parts
@@ -107,20 +108,20 @@ function Checkout() {
       <PageTitle title="Checkout" />
       <form
         onSubmit={submit}
-        className="mx-auto grid max-w-6xl gap-8 px-4 py-10 md:grid-cols-[1fr_340px]"
+        className="mx-auto grid max-w-6xl animate-fade-in gap-6 px-4 py-8 sm:px-6 sm:py-10 md:grid-cols-[1fr_320px] lg:gap-8 lg:grid-cols-[1fr_340px]"
       >
-        <div className="space-y-8">
-          <section className="space-y-4 rounded-lg border bg-card p-6">
-            <h2 className="text-xl">Your details</h2>
+        <div className="space-y-6 sm:space-y-8">
+          <section className="space-y-4 rounded-lg border bg-card p-5 sm:p-6">
+            <h2 className="text-lg sm:text-xl">Your details</h2>
             <F e={errors} name="customer" label="Full name" />
-            <div className="grid gap-4 md:grid-cols-2">
+            <div className="grid gap-4 sm:grid-cols-2">
               <F e={errors} name="phone" label="Phone (M-Pesa)" placeholder="0712 345 678" />
               <F e={errors} name="email" label="Email" type="email" />
             </div>
           </section>
-          <section className="space-y-4 rounded-lg border bg-card p-6">
-            <h2 className="text-xl">Delivery</h2>
-            <div className="grid gap-3 md:grid-cols-2">
+          <section className="space-y-4 rounded-lg border bg-card p-5 sm:p-6">
+            <h2 className="text-lg sm:text-xl">Delivery</h2>
+            <div className="grid gap-3 sm:grid-cols-2">
               <Opt
                 v="Pickup"
                 cur={delivery}
@@ -138,9 +139,9 @@ function Checkout() {
               <F e={errors} name="location" label="Delivery location / landmark" />
             )}
           </section>
-          <section className="space-y-4 rounded-lg border bg-card p-6">
-            <h2 className="text-xl">Payment</h2>
-            <div className="grid gap-3 md:grid-cols-2">
+          <section className="space-y-4 rounded-lg border bg-card p-5 sm:p-6">
+            <h2 className="text-lg sm:text-xl">Payment</h2>
+            <div className="grid gap-3 sm:grid-cols-2">
               <Opt
                 v="M-Pesa"
                 cur={payment}
@@ -156,14 +157,14 @@ function Checkout() {
             </div>
           </section>
         </div>
-        <aside className="h-fit space-y-3 rounded-lg border bg-card p-6">
-          <h2 className="text-xl">Order summary</h2>
+        <aside className="h-fit space-y-3 rounded-lg border bg-card p-5 sm:p-6">
+          <h2 className="text-lg sm:text-xl">Order summary</h2>
           {lines.map((line) => (
-            <div key={line.id} className="flex justify-between text-sm">
-              <span>
+            <div key={line.id} className="flex flex-wrap justify-between gap-2 text-sm">
+              <span className="min-w-0 flex-1">
                 {line.name} × {line.qty}
               </span>
-              <span>{ksh(line.price * line.qty)}</span>
+              <span className="shrink-0">{ksh(line.price * line.qty)}</span>
             </div>
           ))}
           <hr />
@@ -175,13 +176,19 @@ function Checkout() {
             <span>Delivery</span>
             <span>{fee ? ksh(fee) : "Free"}</span>
           </div>
-          <div className="flex justify-between text-lg font-bold">
+          <div className="flex justify-between text-base font-bold sm:text-lg">
             <span>Total</span>
             <span className="text-primary">{ksh(subtotal + fee)}</span>
           </div>
           {errors.form && <p className="text-sm text-destructive">{errors.form}</p>}
           <button type="submit" className="btn btn-primary w-full" disabled={createOrder.isPending}>
-            {createOrder.isPending ? "Placing order…" : "Place order"}
+            {createOrder.isPending ? (
+              <>
+                <LoaderCircle className="h-4 w-4 animate-spin" /> Placing order…
+              </>
+            ) : (
+              "Place order"
+            )}
           </button>
         </aside>
       </form>

@@ -3,6 +3,7 @@ import { z } from "zod";
 import { CATEGORIES } from "@/lib/data";
 import { useProducts, type ProductFilters } from "@/lib/api";
 import { PageTitle, ProductCard } from "@/components/site/Shell";
+import { ProductGridSkeleton } from "@/components/ui/skeletons";
 import { meta } from "@/lib/meta";
 
 const search = z.object({
@@ -24,7 +25,7 @@ export const Route = createFileRoute("/shop")({
 function Shop() {
   const { cat, q, v, sort } = Route.useSearch();
   const nav = useNavigate({ from: "/shop" });
-  const { data: products = [], isLoading } = useProducts({
+  const { data: products = [], isPending } = useProducts({
     search: q,
     category: cat,
     vehicle: v as ProductFilters["vehicle"],
@@ -42,8 +43,8 @@ function Shop() {
   return (
     <>
       <PageTitle title="Shop" sub="Car & motorbike spare parts and accessories" />
-      <div className="mx-auto grid max-w-7xl gap-8 px-4 py-10 md:grid-cols-[240px_1fr]">
-        <aside className="space-y-6">
+      <div className="mx-auto grid max-w-7xl gap-6 px-4 py-8 sm:px-6 sm:py-10 md:grid-cols-[220px_1fr] lg:gap-8">
+        <aside className="space-y-4 md:space-y-6">
           <input
             className="field"
             placeholder="Search parts…"
@@ -52,11 +53,11 @@ function Shop() {
           />
           <div>
             <h3 className="mb-2 text-sm">Category</h3>
-            <div className="flex flex-col gap-1">
+            <div className="flex flex-wrap gap-2 md:flex-col md:gap-1">
               <button
                 type="button"
                 onClick={() => set("cat")}
-                className={`rounded px-3 py-1.5 text-left ${!cat ? "bg-primary text-primary-foreground" : "hover:bg-muted"}`}
+                className={`rounded px-3 py-1.5 text-left text-sm ${!cat ? "bg-primary text-primary-foreground" : "hover:bg-muted"}`}
               >
                 All
               </button>
@@ -65,7 +66,7 @@ function Shop() {
                   type="button"
                   key={c.slug}
                   onClick={() => set("cat", c.slug)}
-                  className={`rounded px-3 py-1.5 text-left ${cat === c.slug ? "bg-primary text-primary-foreground" : "hover:bg-muted"}`}
+                  className={`rounded px-3 py-1.5 text-left text-sm ${cat === c.slug ? "bg-primary text-primary-foreground" : "hover:bg-muted"}`}
                 >
                   {c.name}
                 </button>
@@ -83,12 +84,12 @@ function Shop() {
           </div>
         </aside>
         <div>
-          <div className="mb-4 flex items-center justify-between">
-            <span className="text-muted-foreground">
-              {isLoading ? "Loading…" : `${list.length} products`}
+          <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
+            <span className="text-sm text-muted-foreground">
+              {isPending ? "Loading products…" : `${list.length} products`}
             </span>
             <select
-              className="field w-auto"
+              className="field w-full sm:w-auto"
               value={sort ?? ""}
               onChange={(e) => set("sort", e.target.value)}
             >
@@ -97,14 +98,16 @@ function Shop() {
               <option value="high">Price: high to low</option>
             </select>
           </div>
-          {list.length ? (
-            <div className="grid grid-cols-2 gap-4 lg:grid-cols-3">
+          {isPending ? (
+            <ProductGridSkeleton count={6} className="grid-cols-2 lg:grid-cols-3" />
+          ) : list.length ? (
+            <div className="stagger grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-3">
               {list.map((p) => (
                 <ProductCard key={p.id} p={p} />
               ))}
             </div>
           ) : (
-            <p className="rounded-lg border bg-card p-10 text-center text-muted-foreground">
+            <p className="rounded-lg border bg-card p-8 text-center text-sm text-muted-foreground sm:p-10">
               No parts match. Try another search, or send us an enquiry.
             </p>
           )}

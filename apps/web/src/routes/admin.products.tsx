@@ -10,6 +10,7 @@ import {
   type ProductEditorInput,
 } from "@/lib/api";
 import { useSession } from "@/lib/session";
+import { AdminRowsSkeleton } from "@/components/ui/skeletons";
 
 export const Route = createFileRoute("/admin/products")({
   component: Products,
@@ -41,7 +42,7 @@ const blank: Product = {
 
 function Products() {
   const enabled = !!useSession((s) => s.token);
-  const { data: products = [] } = useProducts({}, enabled);
+  const { data: products = [], isPending } = useProducts({}, enabled);
   const save = useSaveProduct();
   const remove = useDeleteProduct();
   const [edit, setEdit] = useState<Product | null>(null);
@@ -49,17 +50,21 @@ function Products() {
   const [error, setError] = useState("");
   const list = products.filter((p) => p.name.toLowerCase().includes(q.toLowerCase()));
   return (
-    <div className="space-y-6">
-      <div className="flex flex-wrap items-center justify-between gap-3">
-        <h1 className="text-3xl font-bold">Products</h1>
-        <div className="flex gap-2">
+    <div className="animate-fade-in space-y-6">
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+        <h1 className="text-2xl font-bold sm:text-3xl">Products</h1>
+        <div className="flex w-full gap-2 sm:w-auto">
           <input
-            className="field w-56"
+            className="field w-full sm:w-56"
             placeholder="Search…"
             value={q}
             onChange={(e) => setQ(e.target.value)}
           />
-          <button type="button" onClick={() => setEdit(blank)} className="btn btn-primary">
+          <button
+            type="button"
+            onClick={() => setEdit(blank)}
+            className="btn btn-primary w-full sm:w-auto"
+          >
             <Plus className="h-4 w-4" /> Add
           </button>
         </div>
@@ -70,59 +75,68 @@ function Products() {
           <thead className="bg-muted text-left">
             <tr>
               {["Product", "Category", "Price", "Stock", ""].map((h) => (
-                <th key={h} className="p-3 font-display uppercase">
+                <th
+                  key={h}
+                  className="whitespace-nowrap p-3 font-display text-xs uppercase sm:text-sm"
+                >
                   {h}
                 </th>
               ))}
             </tr>
           </thead>
           <tbody>
-            {list.map((p) => (
-              <tr key={p.id} className="border-t">
-                <td className="flex items-center gap-3 p-3">
-                  <img src={p.img} alt="" className="h-10 w-10 rounded object-cover" />
-                  <div>
-                    <b>{p.name}</b>
-                    <p className="text-xs text-muted-foreground">
-                      {p.brand} · {p.vehicle}
-                    </p>
-                  </div>
-                </td>
-                <td className="p-3">{catName(p.category)}</td>
-                <td className="p-3">{ksh(p.price)}</td>
-                <td
-                  className={`p-3 font-semibold ${p.stock <= p.lowStockThreshold ? "text-destructive" : ""}`}
-                >
-                  {p.stock}
-                </td>
-                <td className="p-3 text-right">
-                  <button
-                    type="button"
-                    onClick={() => setEdit(p)}
-                    className="p-1 hover:text-primary"
-                    aria-label="Edit"
+            {enabled && isPending ? (
+              <AdminRowsSkeleton rows={5} columns={5} />
+            ) : (
+              list.map((p) => (
+                <tr key={p.id} className="border-t">
+                  <td className="min-w-[180px] p-3">
+                    <div className="flex items-center gap-3">
+                      <img src={p.img} alt="" className="h-10 w-10 shrink-0 rounded object-cover" />
+                      <div className="min-w-0">
+                        <b className="line-clamp-2 text-sm">{p.name}</b>
+                        <p className="text-xs text-muted-foreground">
+                          {p.brand} · {p.vehicle}
+                        </p>
+                      </div>
+                    </div>
+                  </td>
+                  <td className="whitespace-nowrap p-3">{catName(p.category)}</td>
+                  <td className="whitespace-nowrap p-3">{ksh(p.price)}</td>
+                  <td
+                    className={`whitespace-nowrap p-3 font-semibold ${p.stock <= p.lowStockThreshold ? "text-destructive" : ""}`}
                   >
-                    <Pencil className="h-4 w-4" />
-                  </button>
-                  <button
-                    type="button"
-                    onClick={async () => {
-                      if (confirm(`Delete ${p.name}?`)) {
-                        try {
-                          await remove.mutateAsync(p.id);
-                        } catch (e) {
-                          setError(e instanceof ApiError ? e.message : "Delete failed");
+                    {p.stock}
+                  </td>
+                  <td className="whitespace-nowrap p-3 text-right">
+                    <button
+                      type="button"
+                      onClick={() => setEdit(p)}
+                      className="p-1 hover:text-primary"
+                      aria-label="Edit"
+                    >
+                      <Pencil className="h-4 w-4" />
+                    </button>
+                    <button
+                      type="button"
+                      onClick={async () => {
+                        if (confirm(`Delete ${p.name}?`)) {
+                          try {
+                            await remove.mutateAsync(p.id);
+                          } catch (e) {
+                            setError(e instanceof ApiError ? e.message : "Delete failed");
+                          }
                         }
-                      }
-                    }}
-                    className="p-1 hover:text-destructive"
-                    aria-label="Delete"
-                  >
-                    <Trash2 className="h-4 w-4" />
-                  </button>
-                </td>
-              </tr>
-            ))}
+                      }}
+                      className="p-1 hover:text-destructive"
+                      aria-label="Delete"
+                    >
+                      <Trash2 className="h-4 w-4" />
+                    </button>
+                  </td>
+                </tr>
+              ))
+            )}
           </tbody>
         </table>
       </div>
@@ -186,7 +200,7 @@ function Editor({
             f.id || undefined,
           );
         }}
-        className="max-h-[90vh] w-full max-w-lg space-y-3 overflow-y-auto rounded-xl bg-card p-6"
+        className="max-h-[90vh] w-full max-w-lg space-y-3 overflow-y-auto rounded-xl bg-card p-4 sm:p-6"
       >
         <div className="flex justify-between">
           <h2 className="text-xl">{p.id ? "Edit" : "Add"} product</h2>
@@ -194,7 +208,7 @@ function Editor({
             <X />
           </button>
         </div>
-        <div className="grid grid-cols-2 gap-3">
+        <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
           <input
             className="field"
             placeholder="Name"
@@ -210,7 +224,7 @@ function Editor({
             required
           />
         </div>
-        <div className="grid grid-cols-2 gap-3">
+        <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
           <input
             className="field"
             placeholder="Brand"
@@ -227,7 +241,7 @@ function Editor({
             <option>Universal</option>
           </select>
           <select
-            className="field col-span-2"
+            className="field sm:col-span-2"
             value={f.category}
             onChange={(e) => set("category", e.target.value)}
           >

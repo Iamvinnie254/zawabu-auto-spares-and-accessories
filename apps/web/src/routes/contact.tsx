@@ -1,7 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
 import { z } from "zod";
-import { MapPin, Phone, Clock, CheckCircle2 } from "lucide-react";
+import { MapPin, Phone, Clock, CheckCircle2, LoaderCircle } from "lucide-react";
 import { ApiError, useCreateEnquiry } from "@/lib/api";
 import { PageTitle, PHONE } from "@/components/site/Shell";
 import { meta } from "@/lib/meta";
@@ -59,16 +59,16 @@ function Contact() {
         title="Contact & enquiries"
         sub="Can't find a part? Tell us your vehicle and we'll source it."
       />
-      <div className="mx-auto grid max-w-6xl gap-10 px-4 py-10 md:grid-cols-[1fr_360px]">
+      <div className="mx-auto grid max-w-6xl animate-fade-in gap-8 px-4 py-8 sm:px-6 sm:py-10 lg:grid-cols-[1fr_360px] lg:gap-10">
         {sent ? (
-          <div className="rounded-lg border bg-card p-10 text-center">
-            <CheckCircle2 className="mx-auto h-12 w-12 text-success" />
-            <h2 className="mt-3 text-2xl">Enquiry sent</h2>
+          <div className="animate-fade-in rounded-lg border bg-card p-6 text-center sm:p-10">
+            <CheckCircle2 className="animate-float mx-auto h-12 w-12 text-success" />
+            <h2 className="mt-3 text-xl sm:text-2xl">Enquiry sent</h2>
             <p className="text-muted-foreground">Thanks! Our team will get back to you shortly.</p>
           </div>
         ) : (
-          <form onSubmit={submit} className="space-y-4 rounded-lg border bg-card p-6">
-            <div className="grid gap-4 md:grid-cols-2">
+          <form onSubmit={submit} className="space-y-4 rounded-lg border bg-card p-5 sm:p-6">
+            <div className="grid gap-4 sm:grid-cols-2">
               <label>
                 <span className="text-sm font-medium">Name</span>
                 <input name="name" className="field" />
@@ -97,25 +97,31 @@ function Contact() {
             </label>
             <Err errors={errors} n="form" />
             <button type="submit" className="btn btn-primary" disabled={createEnquiry.isPending}>
-              {createEnquiry.isPending ? "Sending…" : "Send enquiry"}
+              {createEnquiry.isPending ? (
+                <>
+                  <LoaderCircle className="h-4 w-4 animate-spin" /> Sending…
+                </>
+              ) : (
+                "Send enquiry"
+              )}
             </button>
           </form>
         )}
         <aside className="space-y-4">
           <div className="space-y-3 rounded-lg bg-ink p-6 text-ink-foreground">
-            <p className="flex gap-3">
-              <MapPin className="text-accent" /> Kirinyaga Road, Nairobi CBD
+            <p className="flex items-start gap-3">
+              <MapPin className="mt-0.5 shrink-0 text-accent" /> Kirinyaga Road, Nairobi CBD
             </p>
-            <p className="flex gap-3">
-              <Phone className="text-accent" /> {PHONE}
+            <p className="flex items-start gap-3">
+              <Phone className="mt-0.5 shrink-0 text-accent" /> {PHONE}
             </p>
-            <p className="flex gap-3">
-              <Clock className="text-accent" /> Mon–Sat, 8:00am – 6:00pm
+            <p className="flex items-start gap-3">
+              <Clock className="mt-0.5 shrink-0 text-accent" /> Mon–Sat, 8:00am – 6:00pm
             </p>
           </div>
           <iframe
             title="Map"
-            className="h-64 w-full rounded-lg border"
+            className="h-56 w-full rounded-lg border sm:h-64"
             loading="lazy"
             src="https://maps.google.com/maps?q=Kirinyaga%20Road%20Nairobi&z=16&output=embed"
           />

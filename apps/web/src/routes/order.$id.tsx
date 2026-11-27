@@ -4,6 +4,7 @@ import { z } from "zod";
 import { ksh } from "@/lib/data";
 import { useOrder } from "@/lib/api";
 import { useSession } from "@/lib/session";
+import { OrderConfirmationSkeleton } from "@/components/ui/skeletons";
 import type { Order } from "@/lib/types";
 
 export const Route = createFileRoute("/order/$id")({
@@ -24,21 +25,22 @@ function OrderPage() {
   const { id } = Route.useParams();
   const { phone } = Route.useSearch();
   const token = useSession((s) => s.token);
-  const { data: fetched } = useOrder(id, !!token);
+  const { data: fetched, isPending } = useOrder(id, !!token);
   const local = readLastOrder(id);
   const o = fetched ?? local;
+  if (token && isPending && !local) return <OrderConfirmationSkeleton />;
   return (
-    <div className="mx-auto max-w-xl px-4 py-16 text-center">
-      <CheckCircle2 className="mx-auto h-16 w-16 text-success" />
-      <h1 className="mt-4 text-4xl font-bold">Order received!</h1>
+    <div className="mx-auto max-w-xl animate-fade-in px-4 py-10 text-center sm:py-16">
+      <CheckCircle2 className="animate-float mx-auto h-14 w-14 text-success sm:h-16 sm:w-16" />
+      <h1 className="mt-4 text-3xl font-bold sm:text-4xl">Order received!</h1>
       <p className="mt-2 text-muted-foreground">
         Order number <strong className="text-foreground">{o?.orderNumber ?? id}</strong>. We'll call
         you to confirm shortly.
       </p>
       {o && (
-        <div className="mt-8 space-y-2 rounded-lg border bg-card p-6 text-left text-sm">
+        <div className="mt-8 space-y-2 rounded-lg border bg-card p-5 text-left text-sm sm:p-6">
           {o.items.map((i) => (
-            <div key={i.id} className="flex justify-between">
+            <div key={i.id} className="flex flex-wrap justify-between gap-2">
               <span>
                 {i.name} × {i.qty}
               </span>
@@ -55,15 +57,15 @@ function OrderPage() {
           </p>
         </div>
       )}
-      <div className="mt-8 flex justify-center gap-3">
+      <div className="mt-8 flex flex-wrap justify-center gap-3">
         <Link
           to="/track"
           search={{ id: o?.orderNumber ?? id, phone: phone ?? "" }}
-          className="btn btn-outline"
+          className="btn btn-outline w-full sm:w-auto"
         >
           Track order
         </Link>
-        <Link to="/shop" className="btn btn-primary">
+        <Link to="/shop" className="btn btn-primary w-full sm:w-auto">
           Keep shopping
         </Link>
       </div>
