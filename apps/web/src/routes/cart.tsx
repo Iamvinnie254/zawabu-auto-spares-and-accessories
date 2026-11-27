@@ -18,48 +18,59 @@ function Cart() {
   return (
     <>
       <PageTitle title="Your cart" />
-      <div className="mx-auto max-w-5xl px-4 py-10">
+      <div className="mx-auto max-w-5xl animate-fade-in px-4 py-8 sm:px-6 sm:py-10">
         {lines.length === 0 ? (
-          <div className="rounded-lg border bg-card p-12 text-center">
+          <div className="rounded-lg border bg-card p-8 text-center sm:p-12">
             <p className="text-muted-foreground">Your cart is empty.</p>
             <Link to="/shop" className="btn btn-primary mt-4">
               Browse parts
             </Link>
           </div>
         ) : (
-          <div className="grid gap-8 md:grid-cols-[1fr_300px]">
+          <div className="grid gap-6 sm:gap-8 md:grid-cols-[1fr_280px] lg:grid-cols-[1fr_300px]">
             <div className="divide-y rounded-lg border bg-card">
               {lines.map((line) => (
-                <div key={line.id} className="flex items-center gap-4 p-4">
-                  <img src={line.img} alt="" className="h-20 w-20 rounded object-cover" />
-                  <div className="flex-1">
-                    <Link to="/product/$id" params={{ id: line.id }} className="font-semibold">
+                <div key={line.id} className="flex flex-wrap items-center gap-3 p-4 sm:gap-4">
+                  <img
+                    src={line.img}
+                    alt=""
+                    className="h-16 w-16 shrink-0 rounded object-cover sm:h-20 sm:w-20"
+                  />
+                  <div className="min-w-0 flex-1">
+                    <Link
+                      to="/product/$id"
+                      params={{ id: line.id }}
+                      className="line-clamp-2 text-sm font-semibold sm:text-base"
+                    >
                       {line.name}
                     </Link>
-                    <p className="text-sm text-muted-foreground">{ksh(line.price)}</p>
+                    <p className="text-xs text-muted-foreground sm:text-sm">{ksh(line.price)}</p>
                   </div>
-                  <input
-                    type="number"
-                    min={1}
-                    value={line.qty}
-                    onChange={(e) => setQty(line.id, +e.target.value)}
-                    className="field w-16"
-                  />
-                  <span className="w-24 text-right font-semibold">
-                    {ksh(line.price * line.qty)}
-                  </span>
-                  <button
-                    type="button"
-                    onClick={() => remove(line.id)}
-                    aria-label="Remove"
-                    className="text-muted-foreground hover:text-destructive"
-                  >
-                    <Trash2 className="h-5 w-5" />
-                  </button>
+                  <div className="ml-auto flex w-full items-center justify-end gap-2 sm:ml-0 sm:w-auto sm:gap-4">
+                    <input
+                      type="number"
+                      min={1}
+                      value={line.qty}
+                      onChange={(e) => setQty(line.id, +e.target.value)}
+                      aria-label={`Quantity for ${line.name}`}
+                      className="field w-14 sm:w-16"
+                    />
+                    <span className="w-20 text-right text-sm font-semibold sm:w-24 sm:text-base">
+                      {ksh(line.price * line.qty)}
+                    </span>
+                    <button
+                      type="button"
+                      onClick={() => remove(line.id)}
+                      aria-label="Remove"
+                      className="p-1.5 text-muted-foreground hover:text-destructive"
+                    >
+                      <Trash2 className="h-5 w-5" />
+                    </button>
+                  </div>
                 </div>
               ))}
             </div>
-            <div className="h-fit rounded-lg border bg-card p-6">
+            <div className="h-fit rounded-lg border bg-card p-5 sm:p-6">
               <div className="flex justify-between">
                 <span>Subtotal</span>
                 <span className="font-bold">{ksh(subtotal)}</span>

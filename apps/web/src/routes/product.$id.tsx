@@ -5,6 +5,7 @@ import { catName, ksh } from "@/lib/data";
 import { ApiError, productQueryOptions, useProducts } from "@/lib/api";
 import { useCart } from "@/lib/cart";
 import { ProductCard } from "@/components/site/Shell";
+import { ProductDetailSkeleton, ProductGridSkeleton } from "@/components/ui/skeletons";
 
 export const Route = createFileRoute("/product/$id")({
   loader: async ({ params, context }) => {
@@ -15,6 +16,7 @@ export const Route = createFileRoute("/product/$id")({
       throw error;
     }
   },
+  pendingComponent: ProductDetailSkeleton,
   head: ({ loaderData }) =>
     loaderData
       ? {
@@ -35,7 +37,9 @@ export const Route = createFileRoute("/product/$id")({
 
 function ProductPage() {
   const base = Route.useLoaderData();
-  const { data: relatedProducts = [] } = useProducts({ category: base.category });
+  const { data: relatedProducts = [], isPending: relatedPending } = useProducts({
+    category: base.category,
+  });
   const p = relatedProducts.find((x) => x.id === base.id) ?? base;
   const add = useCart((s) => s.add);
   const [qty, setQty] = useState(1);
@@ -43,15 +47,15 @@ function ProductPage() {
   const nav = useNavigate();
   const related = relatedProducts.filter((x) => x.id !== p.id).slice(0, 4);
   return (
-    <div className="mx-auto max-w-7xl px-4 py-10">
-      <nav className="mb-6 text-sm text-muted-foreground">
+    <div className="mx-auto max-w-7xl animate-fade-in px-4 py-8 sm:px-6 sm:py-10">
+      <nav className="mb-6 flex flex-wrap items-center gap-1 text-xs text-muted-foreground sm:text-sm">
         <Link to="/shop">Shop</Link> /{" "}
         <Link to="/shop" search={{ cat: p.category }}>
           {catName(p.category)}
         </Link>{" "}
-        / {p.name}
+        / <span className="min-w-0 truncate">{p.name}</span>
       </nav>
-      <div className="grid gap-10 md:grid-cols-2">
+      <div className="grid gap-8 sm:gap-10 md:grid-cols-2">
         <img
           src={p.img}
           alt={p.name}
@@ -61,15 +65,19 @@ function ProductPage() {
           <span className="text-sm uppercase text-muted-foreground">
             {p.brand || p.condition} · {p.vehicle}
           </span>
-          <h1 className="mt-1 text-4xl font-bold">{p.name}</h1>
-          <p className="mt-1 text-sm text-muted-foreground">
+          <h1 className="mt-1 text-3xl font-bold sm:text-4xl">{p.name}</h1>
+          <p className="mt-1 text-xs text-muted-foreground sm:text-sm">
             SKU {p.sku}
             {p.partNumber ? ` · OEM ${p.partNumber}` : ""}
           </p>
-          <div className="mt-4 flex items-baseline gap-3">
-            <span className="font-display text-3xl font-bold text-primary">{ksh(p.price)}</span>
+          <div className="mt-4 flex flex-wrap items-baseline gap-2 sm:gap-3">
+            <span className="font-display text-2xl font-bold text-primary sm:text-3xl">
+              {ksh(p.price)}
+            </span>
             {p.oldPrice && (
-              <span className="text-lg text-muted-foreground line-through">{ksh(p.oldPrice)}</span>
+              <span className="text-sm text-muted-foreground line-through sm:text-lg">
+                {ksh(p.oldPrice)}
+              </span>
             )}
           </div>
           <p
@@ -85,8 +93,8 @@ function ProductPage() {
               Fits: {[p.make, p.model, p.engine].filter(Boolean).join(" · ")}
             </p>
           )}
-          <div className="mt-8 flex items-center gap-3">
-            <div className="flex items-center rounded border bg-card">
+          <div className="mt-8 flex flex-wrap items-stretch gap-3 sm:flex-nowrap">
+            <div className="flex shrink-0 items-center rounded border bg-card">
               <button
                 type="button"
                 className="px-3 py-2"
@@ -110,7 +118,7 @@ function ProductPage() {
                 add(p, qty);
                 setAdded(true);
               }}
-              className="btn btn-primary flex-1 disabled:opacity-50"
+              className="btn btn-primary min-w-0 flex-1 disabled:opacity-50"
             >
               {added ? (
                 <>
@@ -141,16 +149,21 @@ function ProductPage() {
           </Link>
         </div>
       </div>
-      {related.length > 0 && (
-        <section className="mt-16">
-          <h2 className="text-2xl font-bold">You may also need</h2>
-          <div className="mt-4 grid grid-cols-2 gap-4 md:grid-cols-4">
+      {relatedPending ? (
+        <section className="mt-12 sm:mt-16">
+          <h2 className="text-xl font-bold sm:text-2xl">You may also need</h2>
+          <ProductGridSkeleton className="mt-4" />
+        </section>
+      ) : related.length > 0 ? (
+        <section className="mt-12 sm:mt-16">
+          <h2 className="text-xl font-bold sm:text-2xl">You may also need</h2>
+          <div className="stagger mt-4 grid grid-cols-2 gap-3 sm:gap-4 md:grid-cols-4">
             {related.map((r) => (
               <ProductCard key={r.id} p={r} />
             ))}
           </div>
         </section>
-      )}
+      ) : null}
     </div>
   );
 }
