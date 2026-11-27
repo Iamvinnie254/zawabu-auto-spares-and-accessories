@@ -11,9 +11,7 @@ function Dashboard() {
   const { data: orders = [] } = useOrders(undefined, enabled);
   const { data: enquiries = [] } = useEnquiries(undefined, enabled);
   const { data: low = [] } = useLowStockProducts(enabled);
-  const revenue = orders
-    .filter((o) => o.status !== "Cancelled")
-    .reduce((s, o) => s + o.total, 0);
+  const revenue = orders.filter((o) => o.status !== "Cancelled").reduce((s, o) => s + o.total, 0);
   const stats = [
     ["Revenue", ksh(revenue)],
     ["Orders", orders.length],
@@ -25,10 +23,7 @@ function Dashboard() {
       <h1 className="text-3xl font-bold">Dashboard</h1>
       <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
         {stats.map(([l, v]) => (
-          <div
-            key={l}
-            className="rounded-lg border-l-4 border-primary bg-card p-5"
-          >
+          <div key={l} className="rounded-lg border-l-4 border-primary bg-card p-5">
             <p className="text-sm text-muted-foreground">{l}</p>
             <p className="font-display text-2xl font-bold">{v}</p>
           </div>
@@ -43,10 +38,7 @@ function Dashboard() {
             </Link>
           </div>
           {orders.slice(0, 5).map((o) => (
-            <div
-              key={o.id}
-              className="flex items-center justify-between border-t py-2 text-sm"
-            >
+            <div key={o.id} className="flex items-center justify-between border-t py-2 text-sm">
               <span>
                 {o.orderNumber} · {o.customer}
               </span>
@@ -65,14 +57,9 @@ function Dashboard() {
           </div>
           {low.length ? (
             low.map((p) => (
-              <div
-                key={p.id}
-                className="flex justify-between border-t py-2 text-sm"
-              >
+              <div key={p.id} className="flex justify-between border-t py-2 text-sm">
                 <span>{p.name}</span>
-                <span className="font-semibold text-destructive">
-                  {p.stock} left
-                </span>
+                <span className="font-semibold text-destructive">{p.stock} left</span>
               </div>
             ))
           ) : (

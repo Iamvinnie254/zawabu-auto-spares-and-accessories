@@ -1,13 +1,12 @@
-import { Body, Param, Query } from '@nestjs/common'
-import type { ZodType } from 'zod'
+import { Body, Param, Query } from "@nestjs/common";
+import type { ZodType } from "zod";
 
-import { ZodValidationPipe } from './zod-validation.pipe'
+import { ZodValidationPipe } from "./zod-validation.pipe";
 
-export const ZodBody = (schema: ZodType): ParameterDecorator =>
-  Body(new ZodValidationPipe(schema))
+export const ZodBody = (schema: ZodType): ParameterDecorator => Body(new ZodValidationPipe(schema));
 
 export const ZodQuery = (schema: ZodType): ParameterDecorator =>
-  Query(new ZodValidationPipe(schema))
+  Query(new ZodValidationPipe(schema));
 
 export const ZodParam = (schema: ZodType): ParameterDecorator =>
-  Param(new ZodValidationPipe(schema))
+  Param(new ZodValidationPipe(schema));

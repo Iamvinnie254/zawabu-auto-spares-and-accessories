@@ -4,7 +4,8 @@ import type { CartLine } from "./types";
 
 const memory = new Map<string, string>();
 const safeStorage = {
-  getItem: (key: string) => (typeof window === "undefined" ? memory.get(key) ?? null : localStorage.getItem(key)),
+  getItem: (key: string) =>
+    typeof window === "undefined" ? (memory.get(key) ?? null) : localStorage.getItem(key),
   setItem: (key: string, value: string) => {
     if (typeof window === "undefined") memory.set(key, value);
     else localStorage.setItem(key, value);
@@ -35,7 +36,9 @@ export const useCart = create<CartState>()(
             : [...s.lines, { ...product, qty }],
         })),
       setQty: (id, qty) =>
-        set((s) => ({ lines: s.lines.map((l) => (l.id === id ? { ...l, qty: Math.max(1, qty) } : l)) })),
+        set((s) => ({
+          lines: s.lines.map((l) => (l.id === id ? { ...l, qty: Math.max(1, qty) } : l)),
+        })),
       remove: (id) => set((s) => ({ lines: s.lines.filter((l) => l.id !== id) })),
       clear: () => set({ lines: [] }),
     }),
@@ -49,4 +52,5 @@ export const useCart = create<CartState>()(
 );
 
 export const selectCartCount = (s: CartState) => s.lines.reduce((sum, line) => sum + line.qty, 0);
-export const selectCartSubtotal = (s: CartState) => s.lines.reduce((sum, line) => sum + line.price * line.qty, 0);
+export const selectCartSubtotal = (s: CartState) =>
+  s.lines.reduce((sum, line) => sum + line.price * line.qty, 0);

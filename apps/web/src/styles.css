@@ -1,6 +1,6 @@
 @import "tailwindcss" source(none);
-@source "../src";
 @import "tw-animate-css";
+@source "../src";
 
 @custom-variant dark (&:is(.dark *));
 
@@ -62,29 +62,64 @@
 }
 
 @layer base {
-  * { border-color: var(--color-border); }
-  body { background-color: var(--color-background); color: var(--color-foreground); font-family: var(--font-sans); }
-  h1, h2, h3, h4 { font-family: var(--font-display); text-transform: uppercase; letter-spacing: 0.01em; }
+  * {
+    border-color: var(--color-border);
+  }
+  body {
+    background-color: var(--color-background);
+    color: var(--color-foreground);
+    font-family: var(--font-sans);
+  }
+  h1,
+  h2,
+  h3,
+  h4 {
+    font-family: var(--font-display);
+    text-transform: uppercase;
+    letter-spacing: 0.01em;
+  }
 }
 
 @utility stripe-bg {
   background-image: repeating-linear-gradient(-45deg, var(--accent) 0 14px, var(--ink) 14px 28px);
 }
 @utility btn {
-  display: inline-flex; align-items: center; justify-content: center; gap: 0.5rem;
-  border-radius: var(--radius); padding: 0.65rem 1.25rem; font-weight: 600;
-  font-family: var(--font-display); text-transform: uppercase; letter-spacing: 0.04em; transition: all .15s;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  border-radius: var(--radius);
+  padding: 0.65rem 1.25rem;
+  font-weight: 600;
+  font-family: var(--font-display);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  transition: all 0.15s;
 }
 @utility btn-primary {
-  background: var(--primary); color: var(--primary-foreground);
-  &:hover { filter: brightness(1.08); }
+  background: var(--primary);
+  color: var(--primary-foreground);
+  &:hover {
+    filter: brightness(1.08);
+  }
 }
 @utility btn-outline {
-  border: 1px solid var(--border); background: var(--card); color: var(--foreground);
-  &:hover { border-color: var(--primary); color: var(--primary); }
+  border: 1px solid var(--border);
+  background: var(--card);
+  color: var(--foreground);
+  &:hover {
+    border-color: var(--primary);
+    color: var(--primary);
+  }
 }
 @utility field {
-  width: 100%; border: 1px solid var(--input); background: var(--card); border-radius: var(--radius);
+  width: 100%;
+  border: 1px solid var(--input);
+  background: var(--card);
+  border-radius: var(--radius);
   padding: 0.6rem 0.8rem;
-  &:focus { outline: 2px solid var(--ring); outline-offset: 0; }
+  &:focus {
+    outline: 2px solid var(--ring);
+    outline-offset: 0;
+  }
 }

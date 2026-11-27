@@ -1,13 +1,13 @@
-import { Controller, Get } from '@nestjs/common'
-import { sql } from 'drizzle-orm'
+import { Controller, Get } from "@nestjs/common";
+import { sql } from "drizzle-orm";
 
-import { Public } from '../common/auth.decorators'
-import { CacheService } from '../cache/cache.service'
-import { DRIZZLE } from '../db/db.module'
-import type { Database } from '../db/schema'
-import { Inject } from '@nestjs/common'
+import { Public } from "../common/auth.decorators";
+import { CacheService } from "../cache/cache.service";
+import { DRIZZLE } from "../db/db.module";
+import type { Database } from "../db/schema";
+import { Inject } from "@nestjs/common";
 
-@Controller('health')
+@Controller("health")
 export class HealthController {
   constructor(
     @Inject(DRIZZLE) private readonly db: Database,
@@ -17,13 +17,13 @@ export class HealthController {
   @Public()
   @Get()
   async check() {
-    await this.db.execute(sql`select 1`)
-    const redis = await this.cache.ping()
+    await this.db.execute(sql`select 1`);
+    const redis = await this.cache.ping();
     return {
-      status: redis ? 'ok' : 'degraded',
-      database: 'ok',
-      redis: redis ? 'ok' : 'unavailable',
+      status: redis ? "ok" : "degraded",
+      database: "ok",
+      redis: redis ? "ok" : "unavailable",
       timestamp: new Date().toISOString(),
-    }
+    };
   }
 }

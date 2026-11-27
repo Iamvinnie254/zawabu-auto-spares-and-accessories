@@ -14,5 +14,6 @@ export const CATEGORIES: Category[] = [
 ];
 
 export const catName = (slug: string) => CATEGORIES.find((c) => c.slug === slug)?.name ?? slug;
-export const ksh = (n: number) => "KSh " + n.toLocaleString("en-KE");
-export const fallbackImage = "https://images.unsplash.com/photo-1486262715619-67b85e0b08d3?w=600&h=600&fit=crop";
+export const ksh = (n: number) => `KSh ${n.toLocaleString("en-KE")}`;
+export const fallbackImage =
+  "https://images.unsplash.com/photo-1486262715619-67b85e0b08d3?w=600&h=600&fit=crop";

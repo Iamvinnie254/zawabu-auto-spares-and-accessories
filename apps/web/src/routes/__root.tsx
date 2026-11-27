@@ -1,4 +1,4 @@
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { type QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import {
   Outlet,
   Link,
@@ -56,6 +56,7 @@ function ErrorComponent({ error, reset }: ErrorComponentProps) {
         </p>
         <div className="mt-6 flex flex-wrap justify-center gap-2">
           <button
+            type="button"
             onClick={() => {
               router.invalidate();
               reset();
@@ -85,12 +86,18 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
       { title: "Zawabu Auto Spares & Accessories" },
-      { name: "description", content: "Car and motorbike spare parts and accessories on Kirinyaga Road, Nairobi." },
+      {
+        name: "description",
+        content: "Car and motorbike spare parts and accessories on Kirinyaga Road, Nairobi.",
+      },
       { property: "og:title", content: "Zawabu Auto Spares & Accessories" },
-      { property: "og:description", content: "Car and motorbike spare parts and accessories on Kirinyaga Road, Nairobi." },
+      {
+        property: "og:description",
+        content: "Car and motorbike spare parts and accessories on Kirinyaga Road, Nairobi.",
+      },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
-          ],
+    ],
     links: [
       {
         rel: "stylesheet",
@@ -98,7 +105,10 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       },
       { rel: "icon", href: "/favicon.ico", type: "image/x-icon" },
       { rel: "preconnect", href: "https://fonts.googleapis.com" },
-      { rel: "stylesheet", href: "https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600;700&family=Oswald:wght@500;600;700&display=swap" },
+      {
+        rel: "stylesheet",
+        href: "https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600;700&family=Oswald:wght@500;600;700&display=swap",
+      },
     ],
   }),
   shellComponent: RootShell,
@@ -127,9 +137,9 @@ function RootComponent() {
   useEffect(() => {
     void useSession.persist.rehydrate();
     void useCart.persist.rehydrate();
-    ["zw_cart", "zw_products", "zw_orders", "zw_enq", "zw_admin"].forEach((key) =>
-      localStorage.removeItem(key),
-    );
+    ["zw_cart", "zw_products", "zw_orders", "zw_enq", "zw_admin"].forEach((key) => {
+      localStorage.removeItem(key);
+    });
   }, []);
 
   return (

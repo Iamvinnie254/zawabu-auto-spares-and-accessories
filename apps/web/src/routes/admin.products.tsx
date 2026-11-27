@@ -1,13 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
 import { Pencil, Plus, Trash2, X } from "lucide-react";
-import {
-  CATEGORIES,
-  catName,
-  fallbackImage,
-  ksh,
-  type Product,
-} from "@/lib/data";
+import { CATEGORIES, catName, fallbackImage, ksh, type Product } from "@/lib/data";
 import {
   ApiError,
   useDeleteProduct,
@@ -53,9 +47,7 @@ function Products() {
   const [edit, setEdit] = useState<Product | null>(null);
   const [q, setQ] = useState("");
   const [error, setError] = useState("");
-  const list = products.filter((p) =>
-    p.name.toLowerCase().includes(q.toLowerCase()),
-  );
+  const list = products.filter((p) => p.name.toLowerCase().includes(q.toLowerCase()));
   return (
     <div className="space-y-6">
       <div className="flex flex-wrap items-center justify-between gap-3">
@@ -67,7 +59,7 @@ function Products() {
             value={q}
             onChange={(e) => setQ(e.target.value)}
           />
-          <button onClick={() => setEdit(blank)} className="btn btn-primary">
+          <button type="button" onClick={() => setEdit(blank)} className="btn btn-primary">
             <Plus className="h-4 w-4" /> Add
           </button>
         </div>
@@ -88,11 +80,7 @@ function Products() {
             {list.map((p) => (
               <tr key={p.id} className="border-t">
                 <td className="flex items-center gap-3 p-3">
-                  <img
-                    src={p.img}
-                    alt=""
-                    className="h-10 w-10 rounded object-cover"
-                  />
+                  <img src={p.img} alt="" className="h-10 w-10 rounded object-cover" />
                   <div>
                     <b>{p.name}</b>
                     <p className="text-xs text-muted-foreground">
@@ -109,6 +97,7 @@ function Products() {
                 </td>
                 <td className="p-3 text-right">
                   <button
+                    type="button"
                     onClick={() => setEdit(p)}
                     className="p-1 hover:text-primary"
                     aria-label="Edit"
@@ -116,14 +105,13 @@ function Products() {
                     <Pencil className="h-4 w-4" />
                   </button>
                   <button
+                    type="button"
                     onClick={async () => {
                       if (confirm(`Delete ${p.name}?`)) {
                         try {
                           await remove.mutateAsync(p.id);
                         } catch (e) {
-                          setError(
-                            e instanceof ApiError ? e.message : "Delete failed",
-                          );
+                          setError(e instanceof ApiError ? e.message : "Delete failed");
                         }
                       }
                     }}
@@ -167,8 +155,7 @@ function Editor({
   onSave: (input: ProductEditorInput, id?: string) => void;
 }) {
   const [f, setF] = useState(p);
-  const set = <K extends keyof Product>(k: K, v: Product[K]) =>
-    setF({ ...f, [k]: v });
+  const set = <K extends keyof Product>(k: K, v: Product[K]) => setF({ ...f, [k]: v });
   return (
     <div className="fixed inset-0 z-50 grid place-items-center bg-ink/60 p-4">
       <form
@@ -233,9 +220,7 @@ function Editor({
           <select
             className="field"
             value={f.vehicle}
-            onChange={(e) =>
-              set("vehicle", e.target.value as Product["vehicle"])
-            }
+            onChange={(e) => set("vehicle", e.target.value as Product["vehicle"])}
           >
             <option>Car</option>
             <option>Motorbike</option>
@@ -305,7 +290,9 @@ function Editor({
           value={f.description}
           onChange={(e) => set("description", e.target.value)}
         />
-        <button className="btn btn-primary w-full">Save</button>
+        <button type="submit" className="btn btn-primary w-full">
+          Save
+        </button>
       </form>
     </div>
   );

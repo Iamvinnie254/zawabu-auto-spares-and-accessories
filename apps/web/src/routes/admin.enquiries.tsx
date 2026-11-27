@@ -29,7 +29,7 @@ function Enquiries() {
           <div className="mt-4 flex gap-2">
             {e.email && (
               <a
-                href={`mailto:${e.email}?subject=${encodeURIComponent("Re: " + e.subject)}`}
+                href={`mailto:${e.email}?subject=${encodeURIComponent(`Re: ${e.subject}`)}`}
                 className="btn btn-outline text-sm"
               >
                 Reply by email
@@ -45,6 +45,7 @@ function Enquiries() {
             </a>
             {e.status === "New" && (
               <button
+                type="button"
                 onClick={async () => {
                   try {
                     await update.mutateAsync({
@@ -52,11 +53,7 @@ function Enquiries() {
                       input: { status: "Replied" },
                     });
                   } catch (error) {
-                    window.alert(
-                      error instanceof ApiError
-                        ? error.message
-                        : "Update failed",
-                    );
+                    window.alert(error instanceof ApiError ? error.message : "Update failed");
                   }
                 }}
                 className="btn btn-primary text-sm"

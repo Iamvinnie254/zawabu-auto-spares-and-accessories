@@ -1,29 +1,29 @@
-import { Injectable } from '@nestjs/common'
-import { randomUUID } from 'node:crypto'
+import { Injectable } from "@nestjs/common";
+import { randomUUID } from "node:crypto";
 
-export const PAYMENT_PROVIDER = 'PAYMENT_PROVIDER'
+export const PAYMENT_PROVIDER = "PAYMENT_PROVIDER";
 
 export interface InitiatePaymentResult {
-  provider: 'stub'
-  reference: string
-  status: 'Pending'
-  message: string
+  provider: "stub";
+  reference: string;
+  status: "Pending";
+  message: string;
 }
 
 export interface PaymentProvider {
-  initiate(orderId: string, phone: string): Promise<InitiatePaymentResult>
+  initiate(orderId: string, phone: string): Promise<InitiatePaymentResult>;
 }
 
 @Injectable()
 export class StubPaymentProvider implements PaymentProvider {
   async initiate(_orderId: string, _phone: string): Promise<InitiatePaymentResult> {
-    const reference = `MPESA-${randomUUID().slice(0, 8).toUpperCase()}`
+    const reference = `MPESA-${randomUUID().slice(0, 8).toUpperCase()}`;
 
     return {
-      provider: 'stub',
+      provider: "stub",
       reference,
-      status: 'Pending',
-      message: 'STK push simulated. Replace with Safaricom Daraja in production.',
-    }
+      status: "Pending",
+      message: "STK push simulated. Replace with Safaricom Daraja in production.",
+    };
   }
 }

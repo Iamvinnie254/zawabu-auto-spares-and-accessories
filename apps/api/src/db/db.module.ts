@@ -1,25 +1,19 @@
-import {
-  Global,
-  Inject,
-  Injectable,
-  Module,
-  type OnModuleDestroy,
-} from '@nestjs/common'
-import { ConfigService } from '@nestjs/config'
-import { drizzle } from 'drizzle-orm/postgres-js'
-import postgres, { type Sql } from 'postgres'
+import { Global, Inject, Injectable, Module, type OnModuleDestroy } from "@nestjs/common";
+import { ConfigService } from "@nestjs/config";
+import { drizzle } from "drizzle-orm/postgres-js";
+import postgres, { type Sql } from "postgres";
 
-import { schema } from './schema'
+import { schema } from "./schema";
 
-export const PG_CLIENT = 'PG_CLIENT'
-export const DRIZZLE = 'DRIZZLE'
+export const PG_CLIENT = "PG_CLIENT";
+export const DRIZZLE = "DRIZZLE";
 
 @Injectable()
 class DatabaseLifecycle implements OnModuleDestroy {
   constructor(@Inject(PG_CLIENT) private readonly client: Sql) {}
 
   async onModuleDestroy(): Promise<void> {
-    await this.client.end()
+    await this.client.end();
   }
 }
 
@@ -30,7 +24,7 @@ class DatabaseLifecycle implements OnModuleDestroy {
       provide: PG_CLIENT,
       inject: [ConfigService],
       useFactory: (config: ConfigService) =>
-        postgres(config.get<string>('DATABASE_URL')!, { max: 10 }),
+        postgres(config.getOrThrow<string>("DATABASE_URL"), { max: 10 }),
     },
     {
       provide: DRIZZLE,

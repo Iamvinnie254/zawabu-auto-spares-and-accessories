@@ -13,12 +13,15 @@ import type { AuthUser, Enquiry, Order, OrderItem, Product } from "./types";
 
 const clientBase = import.meta.env.DEV
   ? "http://localhost:4000/api"
-  : import.meta.env.VITE_API_URL ?? "/api";
+  : (import.meta.env.VITE_API_URL ?? "/api");
 const serverBase = import.meta.env.VITE_API_SERVER_URL ?? "http://localhost:4000/api";
 export const apiBase = typeof window === "undefined" ? serverBase : clientBase;
 
 export class ApiError extends Error {
-  constructor(public status: number, message: string) {
+  constructor(
+    public status: number,
+    message: string,
+  ) {
     super(message);
   }
 }
@@ -43,14 +46,26 @@ async function apiFetch<T>(path: string, init: RequestInit = {}): Promise<T> {
   return response.status === 204 ? (undefined as T) : response.json();
 }
 
-type RawProduct = Omit<Product, "make" | "model" | "engine" | "partNumber" | "brand" | "oldPrice" | "description" | "img"> & {
-  make: string | null; model: string | null; engine: string | null; partNumber: string | null;
-  brand: string | null; oldPrice: number | null; description: string | null; img: string | null;
+type RawProduct = Omit<
+  Product,
+  "make" | "model" | "engine" | "partNumber" | "brand" | "oldPrice" | "description" | "img"
+> & {
+  make: string | null;
+  model: string | null;
+  engine: string | null;
+  partNumber: string | null;
+  brand: string | null;
+  oldPrice: number | null;
+  description: string | null;
+  img: string | null;
 };
 
 type RawOrderItem = Omit<OrderItem, "price"> & { unitPrice: number };
 type RawOrder = Omit<Order, "date" | "email" | "notes" | "items"> & {
-  createdAt: string; email: string | null; notes: string | null; items: RawOrderItem[];
+  createdAt: string;
+  email: string | null;
+  notes: string | null;
+  items: RawOrderItem[];
 };
 
 type RawEnquiry = Omit<Enquiry, "date" | "email"> & { createdAt: string; email: string | null };
@@ -113,7 +128,8 @@ export function productsQueryOptions(
 ): UseQueryOptions<Product[], ApiError> {
   return {
     queryKey: keys.products(filters),
-    queryFn: async () => (await apiFetch<RawProduct[]>(`/products${productParams(filters)}`)).map(normalizeProduct),
+    queryFn: async () =>
+      (await apiFetch<RawProduct[]>(`/products${productParams(filters)}`)).map(normalizeProduct),
     enabled,
     staleTime: 30_000,
   };
@@ -134,14 +150,18 @@ export const useProduct = (id: string) => useQuery(productQueryOptions(id));
 export const useLowStockProducts = (enabled = true) =>
   useQuery({
     queryKey: ["products", "low-stock"],
-    queryFn: async () => (await apiFetch<RawProduct[]>("/products/low-stock")).map(normalizeProduct),
+    queryFn: async () =>
+      (await apiFetch<RawProduct[]>("/products/low-stock")).map(normalizeProduct),
     enabled,
   });
 
 export const useOrders = (status?: string, enabled = true) =>
   useQuery({
     queryKey: keys.orders(status),
-    queryFn: async () => (await apiFetch<RawOrder[]>(`/orders${status ? `?status=${status}` : ""}`)).map(normalizeOrder),
+    queryFn: async () =>
+      (await apiFetch<RawOrder[]>(`/orders${status ? `?status=${status}` : ""}`)).map(
+        normalizeOrder,
+      ),
     enabled,
   });
 
@@ -166,7 +186,10 @@ export const useTrackOrder = (orderNumber: string, phone: string) =>
 export const useEnquiries = (status?: string, enabled = true) =>
   useQuery({
     queryKey: keys.enquiries(status),
-    queryFn: async () => (await apiFetch<RawEnquiry[]>(`/enquiries${status ? `?status=${status}` : ""}`)).map(normalizeEnquiry),
+    queryFn: async () =>
+      (await apiFetch<RawEnquiry[]>(`/enquiries${status ? `?status=${status}` : ""}`)).map(
+        normalizeEnquiry,
+      ),
     enabled,
   });
 
@@ -184,7 +207,9 @@ export function useCreateOrder() {
   const qc = useQueryClient();
   return useMutation({
     mutationFn: (input: CreateOrderInput) =>
-      apiFetch<RawOrder>("/orders", { method: "POST", body: JSON.stringify(input) }).then(normalizeOrder),
+      apiFetch<RawOrder>("/orders", { method: "POST", body: JSON.stringify(input) }).then(
+        normalizeOrder,
+      ),
     onSuccess: () => qc.invalidateQueries({ queryKey: ["products"] }),
   });
 }
@@ -208,7 +233,9 @@ export function useUpdateOrder() {
 export function useCreateEnquiry() {
   return useMutation({
     mutationFn: (input: EnquiryInput) =>
-      apiFetch<RawEnquiry>("/enquiries", { method: "POST", body: JSON.stringify(input) }).then(normalizeEnquiry),
+      apiFetch<RawEnquiry>("/enquiries", { method: "POST", body: JSON.stringify(input) }).then(
+        normalizeEnquiry,
+      ),
   });
 }
 

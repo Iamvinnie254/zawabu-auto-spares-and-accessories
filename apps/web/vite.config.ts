@@ -1,16 +1,16 @@
-import { fileURLToPath, URL } from 'node:url'
-import { defineConfig } from 'vite'
+import { fileURLToPath, URL } from "node:url";
+import { defineConfig } from "vite";
 
-import { tanstackStart } from '@tanstack/react-start/plugin/vite'
+import { tanstackStart } from "@tanstack/react-start/plugin/vite";
 
-import viteReact from '@vitejs/plugin-react'
-import tailwindcss from '@tailwindcss/vite'
-import { nitro } from 'nitro/vite'
+import viteReact from "@vitejs/plugin-react";
+import tailwindcss from "@tailwindcss/vite";
+import { nitro } from "nitro/vite";
 
 const config = defineConfig({
   resolve: {
     alias: {
-      '@': fileURLToPath(new URL('./src', import.meta.url)),
+      "@": fileURLToPath(new URL("./src", import.meta.url)),
     },
   },
   plugins: [
@@ -19,6 +19,6 @@ const config = defineConfig({
     tanstackStart(),
     viteReact(),
   ],
-})
+});
 
-export default config
+export default config;

@@ -1,0 +1,8 @@
+pre-push:
+  commands:
+    typecheck:
+      run: bun run typecheck
+    format:
+      run: bun run format:check
+    lint:
+      run: bun run lint

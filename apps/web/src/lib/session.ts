@@ -4,7 +4,8 @@ import type { AuthUser } from "./types";
 
 const memory = new Map<string, string>();
 const safeStorage = {
-  getItem: (key: string) => (typeof window === "undefined" ? memory.get(key) ?? null : localStorage.getItem(key)),
+  getItem: (key: string) =>
+    typeof window === "undefined" ? (memory.get(key) ?? null) : localStorage.getItem(key),
   setItem: (key: string, value: string) => {
     if (typeof window === "undefined") memory.set(key, value);
     else localStorage.setItem(key, value);
